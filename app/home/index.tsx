@@ -6,7 +6,7 @@ import MainSlideshow from '@/presentation/components/MainSlideshow';
 import MoviesHorizontalList from '@/presentation/components/movies/MoviesHorizontalList';
 
 const HomeScreen = () => {
-  const { nowPlayingQuery, popularQuery } = useMovies();
+  const { nowPlayingQuery, popularQuery, popularMovies } = useMovies();
   const safeArea = useSafeAreaInsets();
 
   const isLoading = nowPlayingQuery.isLoading || popularQuery.isLoading;
@@ -21,9 +21,15 @@ const HomeScreen = () => {
       />
 
       <MoviesHorizontalList
-        movies={popularQuery.data ?? []}
+        movies={popularMovies}
         title="Populares"
         isLoading={isLoading}
+        isFetchingNextPage={popularQuery.isFetchingNextPage}
+        onEndReached={() => {
+          if (popularQuery.hasNextPage && !popularQuery.isFetchingNextPage) {
+            popularQuery.fetchNextPage();
+          }
+        }}
       />
     </ScrollView>
   );

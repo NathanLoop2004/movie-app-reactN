@@ -1,4 +1,4 @@
-import { View, Text, FlatList, ScrollView } from 'react-native'
+import { View, Text, FlatList, ScrollView, ActivityIndicator } from 'react-native'
 import React from 'react'
 import { Movie } from '@/infrastructure/interfaces/movie.interface'
 import MoviePosters from './MoviePosters';
@@ -10,9 +10,17 @@ interface Props {
     movies: Movie[];
     title?: string;
     isLoading?: boolean;
+    isFetchingNextPage?: boolean;
+    onEndReached?: () => void;
 }
 
-const MoviesHorizontalList = ({ movies, title = 'Populares', isLoading = false }: Props) => {
+const MoviesHorizontalList = ({
+  movies,
+  title = 'Populares',
+  isLoading = false,
+  isFetchingNextPage = false,
+  onEndReached,
+}: Props) => {
 
   return (
     <View className="mt-4">
@@ -34,6 +42,15 @@ const MoviesHorizontalList = ({ movies, title = 'Populares', isLoading = false }
             <MoviePosters id={item.id} poster={item.poster} smallPoster={true} />
           )}
           keyExtractor={(item) => item.id.toString()}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.4}
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <View style={{ width: 60, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="small" color="#9CA3AF" />
+              </View>
+            ) : null
+          }
         />
       )}
     </View>
