@@ -1,6 +1,7 @@
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
 import { nowPlayingActions } from '@/core/actions/movies/now-playing.actions'
 import { popularActions } from '@/core/actions/movies/popular.actions'
+import { topRatedActions } from '@/core/actions/movies/top-rated.actions'
 
 const useMovies = () => {
 
@@ -18,11 +19,27 @@ const useMovies = () => {
     staleTime: 1000 * 60 * 60 * 24,
   })
 
-  const seenIds = new Set<number>();
+  const topRatedQuery = useInfiniteQuery({
+    queryKey: ['movies', 'top-rated'],
+    queryFn: ({ pageParam }) => topRatedActions(pageParam as number),
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: 1,
+    staleTime: 1000 * 60 * 60 * 24,
+  })
+
+  const seenPopularIds = new Set<number>();
   const popularMovies = (popularQuery.data?.pages.flatMap((page) => page.movies) ?? [])
     .filter((movie) => {
-      if (seenIds.has(movie.id)) return false;
-      seenIds.add(movie.id);
+      if (seenPopularIds.has(movie.id)) return false;
+      seenPopularIds.add(movie.id);
+      return true;
+    });
+
+  const seenTopRatedIds = new Set<number>();
+  const topRatedMovies = (topRatedQuery.data?.pages.flatMap((page) => page.movies) ?? [])
+    .filter((movie) => {
+      if (seenTopRatedIds.has(movie.id)) return false;
+      seenTopRatedIds.add(movie.id);
       return true;
     });
 
@@ -30,6 +47,8 @@ const useMovies = () => {
     nowPlayingQuery,
     popularQuery,
     popularMovies,
+    topRatedQuery,
+    topRatedMovies,
   }
 
 }

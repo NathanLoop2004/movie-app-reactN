@@ -4,12 +4,12 @@ import useMovies from '@/presentation/hooks/useMovies'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MainSlideshow from '@/presentation/components/MainSlideshow';
 import MoviesHorizontalList from '@/presentation/components/movies/MoviesHorizontalList';
-
+import MoviesRatedList from '@/presentation/components/movies/TopRated';
 const HomeScreen = () => {
-  const { nowPlayingQuery, popularQuery, popularMovies } = useMovies();
+  const { nowPlayingQuery, popularQuery, popularMovies, topRatedQuery, topRatedMovies } = useMovies();
   const safeArea = useSafeAreaInsets();
 
-  const isLoading = nowPlayingQuery.isLoading || popularQuery.isLoading;
+  const isLoading = nowPlayingQuery.isLoading || popularQuery.isLoading || topRatedQuery.isLoading;
 
   return (
     <ScrollView style={{ marginTop: safeArea.top }}>
@@ -28,6 +28,17 @@ const HomeScreen = () => {
         onEndReached={() => {
           if (popularQuery.hasNextPage && !popularQuery.isFetchingNextPage) {
             popularQuery.fetchNextPage();
+          }
+        }}
+      />
+            <MoviesRatedList
+        movies={topRatedMovies}
+        title="Top Rated"
+        isLoading={isLoading}
+        isFetchingNextPage={topRatedQuery.isFetchingNextPage}
+        onEndReached={() => {
+          if (topRatedQuery.hasNextPage && !topRatedQuery.isFetchingNextPage) {
+            topRatedQuery.fetchNextPage();
           }
         }}
       />

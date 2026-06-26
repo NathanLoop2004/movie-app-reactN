@@ -14,9 +14,9 @@ interface Props {
     onEndReached?: () => void;
 }
 
-const MoviesHorizontalList = ({
+const MoviesRatedList = ({
   movies,
-  title = 'Populares',
+  title = 'top rated',
   isLoading = false,
   isFetchingNextPage = false,
   onEndReached,
@@ -57,4 +57,4 @@ const MoviesHorizontalList = ({
   )
 }
 
-export default MoviesHorizontalList
+export default MoviesRatedList
