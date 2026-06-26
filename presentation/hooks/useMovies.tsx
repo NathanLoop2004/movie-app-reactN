@@ -2,6 +2,7 @@ import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
 import { nowPlayingActions } from '@/core/actions/movies/now-playing.actions'
 import { popularActions } from '@/core/actions/movies/popular.actions'
 import { topRatedActions } from '@/core/actions/movies/top-rated.actions'
+import { upcomingActions } from '@/core/actions/movies/upcoming-playing'
 
 const useMovies = () => {
 
@@ -27,6 +28,14 @@ const useMovies = () => {
     staleTime: 1000 * 60 * 60 * 24,
   })
 
+  const upcomingQuery = useInfiniteQuery({
+    queryKey: ['movies', 'upcoming'],
+    queryFn: ({ pageParam }) => upcomingActions(pageParam as number),
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: 1,
+    staleTime: 1000 * 60 * 60 * 24,
+  })
+
   const seenPopularIds = new Set<number>();
   const popularMovies = (popularQuery.data?.pages.flatMap((page) => page.movies) ?? [])
     .filter((movie) => {
@@ -43,12 +52,22 @@ const useMovies = () => {
       return true;
     });
 
+  const seenUpcomingIds = new Set<number>();
+  const upcomingMovies = (upcomingQuery.data?.pages.flatMap((page) => page.movies) ?? [])
+    .filter((movie) => {
+      if (seenUpcomingIds.has(movie.id)) return false;
+      seenUpcomingIds.add(movie.id);
+      return true;
+    });
+
   return {
     nowPlayingQuery,
     popularQuery,
     popularMovies,
     topRatedQuery,
     topRatedMovies,
+    upcomingQuery,
+    upcomingMovies,
   }
 
 }
