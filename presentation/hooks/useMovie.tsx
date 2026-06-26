@@ -16,11 +16,18 @@ const useMovie = (id: number | string) => {
     staleTime: 1000 * 60 * 60 * 24,
   })
 
+  const seenCastIds = new Set<number>();
+  const cast = (creditsQuery.data?.cast ?? []).filter((c) => {
+    if (seenCastIds.has(c.id)) return false;
+    seenCastIds.add(c.id);
+    return true;
+  });
+
   return {
     movieQuery,
     movie: movieQuery.data,
     isLoading: movieQuery.isLoading,
-    cast: creditsQuery.data?.cast ?? [],
+    cast,
     crew: creditsQuery.data?.crew ?? [],
   }
 
